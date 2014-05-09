@@ -12,40 +12,37 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
 
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.util.Log;
-import model.Legs;
-import model.Route;
-import model.Point;
 import model.Direction;
+import model.OptimizationModule;
 
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.PolylineOptions;
 
 public class GoogleMapsUtils {
 	
+	public final static int GOOGLE_API_SUPPORTED_WAYPOINTS = 8;
 	public final static String MODE_DRIVING = "driving";
 	public final static String MODE_WALKING = "walking";
 	public final static String MODE_BICYCLING = "bicycling";
 	public final static String MODE_TRANSIT = "transit";
-   
 	
 	public static void getDirection(CallBack callback, LatLng start, LatLng end, String mode) {
 		GoogleDirectionAsyncRestCall async = new GoogleDirectionAsyncRestCall(callback, mode);
 		async.execute(start, end);
 	}
 	
-	/**
-	 * Simple Rest Call to the Google Direction WebService
-	 * http://maps.googleapis.com/maps/api/directions/json?
-	 * 
-	 * @param Starting Point
-	 * @param Ending Point
-	 * @param Travel mode
-	 * @return The json returned by the webServer
-	 */
+	public static void getDirection(CallBack callback, List<LatLng> listPoi, String mode) {
+		
+		if(listPoi.size()<GOOGLE_API_SUPPORTED_WAYPOINTS){
+			GoogleDirectionAsyncRestCall asyncRest= new GoogleDirectionAsyncRestCall(callback, mode);
+			//asyncRest.execute(listPoi);
+		}
+		else{
+			OptimizationModule.localRouting(listPoi);
+		}
+	}
+	
 	private static String getJSONDirection(LatLng start, LatLng end, String mode) {
 		
 		LatLng intermediate1 = new LatLng(45.45,9.21);
@@ -98,9 +95,9 @@ public class GoogleMapsUtils {
 	}
 	
 
-	//////////////////////////////////////////////////
-	//	INTERNAL CLASS -> PROVARE A SPOSTARLA FUORI TANTO E' STATICA
-	//////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////
+	//	INTERNAL CLASS -> PROVARE A SPOSTARLA FUORI TANTO E' STATICA  //
+	////////////////////////////////////////////////////////////////////
 	/**
 	 * This class aims to make an async call to the server and retrieve the Json representing
 	 * the Direction
@@ -126,7 +123,7 @@ public class GoogleMapsUtils {
 			// Parse the element and return it
 			return parseJsonGDir(json);
 		}
-
+		
 		@Override
 		protected void onPostExecute(List<Direction> result) {
 			super.onPostExecute(result);
@@ -134,8 +131,8 @@ public class GoogleMapsUtils {
 			callback.onDirectionLoaded(result);
 		}
 	}
-	//////////////////////////////////////////////////
-	//	END INTERNAL CLASS
-	//////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////
+	//	END INTERNAL CLASS							                  //
+    ////////////////////////////////////////////////////////////////////
 	
 }
