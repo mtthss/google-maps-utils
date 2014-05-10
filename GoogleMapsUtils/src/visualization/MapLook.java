@@ -48,16 +48,13 @@ public class MapLook {
 		plo.color(Color.GREEN);
 	}
 	
-	public static void drawAreas(List<Polygon> polygons, GoogleMap map){
+	public static void drawAreas(List<PolygonOptions> polygons, GoogleMap map){
 		int i=0;
-		for(Polygon pol: polygons){
+		for(PolygonOptions pol: polygons){
 			i++;
-			PolygonOptions polygon=new PolygonOptions();
-			for(LatLng latlng: pol.getPoints()){
-				polygon.add(latlng);
-			}
-			polygon.fillColor(Color.parseColor(Colour.getColor(i)));
-			map.addPolygon(polygon);
+			pol.add(new LatLng(45.469121, 9.178074), new LatLng(45.461318, 9.173590), new LatLng(45.456291, 9.186035));
+			pol.fillColor(Color.BLUE);
+			map.addPolygon(pol);
 		}
 		
 	}
