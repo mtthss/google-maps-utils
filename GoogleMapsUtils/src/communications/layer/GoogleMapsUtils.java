@@ -12,16 +12,16 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
 
+import routing.OptimizationModule;
 import android.os.AsyncTask;
 import android.util.Log;
 import model.Direction;
-import model.OptimizationModule;
 
 import com.google.android.gms.maps.model.LatLng;
 
 public class GoogleMapsUtils {
 	
-	public final static int GOOGLE_API_SUPPORTED_WAYPOINTS = 8;
+	public final static int GOOGLE_API_SUPPORTED_WAYPOINTS = 0;
 	public final static String MODE_DRIVING = "driving";
 	public final static String MODE_WALKING = "walking";
 	public final static String MODE_BICYCLING = "bicycling";
@@ -40,6 +40,8 @@ public class GoogleMapsUtils {
 		}
 		else{
 			OptimizationModule.localRouting(listPoi);
+			GoogleDirectionAsyncRestCall asyncRest= new GoogleDirectionAsyncRestCall(callback, mode);
+			//asyncRest.execute(listPoi);
 		}
 	}
 	
