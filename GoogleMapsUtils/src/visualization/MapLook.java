@@ -12,6 +12,8 @@ import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -59,7 +61,12 @@ public class MapLook {
 		
 	}
 	
-
+	public static void drawPOI(List<MarkerOptions> pois, GoogleMap map){
+		for(MarkerOptions marker:pois){
+			map.addMarker(marker);
+		}
+		
+	}
 	
 	
 	
