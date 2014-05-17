@@ -54,8 +54,8 @@ public class MapLook {
 		int i=0;
 		for(PolygonOptions pol: polygons){
 			i++;
-			pol.add(new LatLng(45.469121, 9.178074), new LatLng(45.461318, 9.173590), new LatLng(45.456291, 9.186035));
-			pol.fillColor(Color.BLUE);
+			pol.fillColor(Color.RED);
+			pol.strokeWidth(0);
 			map.addPolygon(pol);
 		}
 		
