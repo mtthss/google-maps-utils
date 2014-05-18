@@ -1,6 +1,8 @@
-package communications.layer;
+package communications;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -21,41 +23,58 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class GoogleMapsUtils {
 	
-	public final static int GOOGLE_API_SUPPORTED_WAYPOINTS = 0;
+	public final static int GOOGLE_API_SUPPORTED_WAYPOINTS = 10;
 	public final static String MODE_DRIVING = "driving";
 	public final static String MODE_WALKING = "walking";
 	public final static String MODE_BICYCLING = "bicycling";
 	public final static String MODE_TRANSIT = "transit";
 	
-	public static void getDirection(CallBack callback, LatLng start, LatLng end, String mode) {
-		GoogleDirectionAsyncRestCall async = new GoogleDirectionAsyncRestCall(callback, mode);
-		async.execute(start, end);
-	}
 	
-	public static void getDirection(CallBack callback, List<LatLng> listPoi, String mode) {
+	public static void getDirection(CallBack callback, List<LatLng> unsortedPoi, String mode) {
 		
-		if(listPoi.size()<GOOGLE_API_SUPPORTED_WAYPOINTS){
-			GoogleDirectionAsyncRestCall asyncRest= new GoogleDirectionAsyncRestCall(callback, mode);
-			//asyncRest.execute(listPoi);
+		if(unsortedPoi.size()<GOOGLE_API_SUPPORTED_WAYPOINTS){
+			GoogleDirectionAsyncRestCall asyncRest= new GoogleDirectionAsyncRestCall(callback, mode, true);
+			asyncRest.execute(unsortedPoi);
 		}
 		else{
-			OptimizationModule.localRouting(listPoi);
-			GoogleDirectionAsyncRestCall asyncRest= new GoogleDirectionAsyncRestCall(callback, mode);
-			//asyncRest.execute(listPoi);
+			List<LatLng> sortedPoi = OptimizationModule.localRouting(unsortedPoi);
+			GoogleDirectionAsyncRestCall asyncRest= new GoogleDirectionAsyncRestCall(callback, mode, false);
+			asyncRest.execute(sortedPoi);
 		}
 	}
 	
-	private static String getJSONDirection(LatLng start, LatLng end, String mode) {
-		
-		LatLng intermediate1 = new LatLng(45.45,9.21);
-		LatLng intermediate2 = new LatLng(45.42,9.23);
-		
+	private static String getJSONDirection(List<LatLng> listPoi, String mode, boolean remoteOptimization) {
 		// SE NON FUNZIA PROVARE AD AGGIUNGERE IN CODA << +"&sensor=false&key=API_KEY" >>
-		String url = "http://maps.googleapis.com/maps/api/directions/json?" + "origin=" + start.latitude + ","
+		LatLng start = listPoi.get(0);
+		LatLng end = listPoi.get(listPoi.size()-1);
+		
+		String url=null;
+		try {
+			url = URLEncoder.encode("http://maps.googleapis.com/maps/api/directions/json?origin=45.2,9.4&destination=45.5,9.6&sensor=false&units=metric&mode=walking&waypoints=45.4,10|45.2,9.31", "UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+			e1.printStackTrace();
+		}
+		
+		// initialize url with start point and end point
+		String turl = "http://maps.googleapis.com/maps/api/directions/json?" + "origin=" + start.latitude + ","
 				+ start.longitude + "&destination=" + end.latitude + "," + end.longitude
-				+ "&sensor=false&units=metric&mode=" + mode
-				+ "&waypoints=optimize:true|" + intermediate1.latitude + "," + intermediate1.longitude 
-				+ "|" + intermediate2.latitude + "," + intermediate2.longitude;
+				+ "&sensor=false&units=metric&mode=" + mode + "&waypoints=optimize:";
+		
+		// add way points and choose optimization policy
+		if(listPoi.size()>2){
+			
+			// choose optimization policy
+			if(remoteOptimization){
+				turl = turl + "true";
+			}else{
+				turl = turl + "false";
+			}
+			
+			// add way points
+			for(int i=1;i<listPoi.size()-1;i++){
+				turl = turl + "|" + listPoi.get(i).latitude + "," + listPoi.get(i).longitude; 
+			}
+		}
 		
 		String responseBody = null;
 		// The HTTP get method send to the URL
@@ -97,44 +116,44 @@ public class GoogleMapsUtils {
 	}
 	
 
-	////////////////////////////////////////////////////////////////////
-	//	INTERNAL CLASS -> PROVARE A SPOSTARLA FUORI TANTO E' STATICA  //
-	////////////////////////////////////////////////////////////////////
 	/**
-	 * This class aims to make an async call to the server and retrieve the Json representing
-	 * the Direction
+	 * This class aims to make an async call to the server and retrieve the Json representing the Direction
 	 * Then build the GDirection object
 	 * Then post it to the DCACallBack in the UI Thread
 	 */
-	public static final class GoogleDirectionAsyncRestCall extends AsyncTask<LatLng, String, List<Direction>> {
+	public static final class GoogleDirectionAsyncRestCall extends AsyncTask<List<LatLng>, Void, List<Direction>> {
 
 		private String mDirectionMode = null;
 		private CallBack callback;
-
-
-		public GoogleDirectionAsyncRestCall(CallBack callback, String mDirectionMode) {
+		private boolean remoteOptimization;
+		
+		public GoogleDirectionAsyncRestCall(CallBack callback, String mDirectionMode, boolean remote) {
 			super();
 			this.mDirectionMode = mDirectionMode;
 			this.callback = callback;
+			this.remoteOptimization = remote;
 		}
 
 		@Override
-		protected List<Direction> doInBackground(LatLng... arg0) {
+		protected List<Direction> doInBackground(List<LatLng>... arg0) {
 			// Do the rest http call
-			String json = getJSONDirection(arg0[0], arg0[1], mDirectionMode);
+			String json = getJSONDirection(arg0[0], mDirectionMode, remoteOptimization);
 			// Parse the element and return it
 			return parseJsonGDir(json);
 		}
 		
+		/*
+		protected void onProgressUpdate(Integer... progress) {
+	         setProgressPercent(progress[0]);
+	     }
+		*/
+		
 		@Override
 		protected void onPostExecute(List<Direction> result) {
 			super.onPostExecute(result);
-			// Just call the callback
+			// Just pass the result to the callback
 			callback.onDirectionLoaded(result);
 		}
 	}
-	////////////////////////////////////////////////////////////////////
-	//	END INTERNAL CLASS							                  //
-    ////////////////////////////////////////////////////////////////////
 	
 }

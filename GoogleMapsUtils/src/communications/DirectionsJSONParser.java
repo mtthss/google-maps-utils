@@ -1,4 +1,4 @@
-package communications.layer;
+package communications;
 
 import java.util.ArrayList;
 import java.util.List;

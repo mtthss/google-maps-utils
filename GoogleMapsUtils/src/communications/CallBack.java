@@ -1,5 +1,5 @@
 
-package communications.layer;
+package communications;
 
 import java.util.List;
 import model.Direction;
