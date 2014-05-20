@@ -23,12 +23,11 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class GoogleMapsUtils {
 	
-	public final static int GOOGLE_API_SUPPORTED_WAYPOINTS = 10;
+	public final static int GOOGLE_API_SUPPORTED_WAYPOINTS = 0;
 	public final static String MODE_DRIVING = "driving";
 	public final static String MODE_WALKING = "walking";
 	public final static String MODE_BICYCLING = "bicycling";
 	public final static String MODE_TRANSIT = "transit";
-	
 	
 	public static void getDirection(CallBack callback, List<LatLng> unsortedPoi, String mode) {
 		
@@ -50,7 +49,7 @@ public class GoogleMapsUtils {
 		
 		String url=null;
 		try {
-			url = URLEncoder.encode("http://maps.googleapis.com/maps/api/directions/json?origin=45.2,9.4&destination=45.5,9.6&sensor=false&units=metric&mode=walking&waypoints=45.4,10|45.2,9.31", "UTF-8");
+			url = "http://maps.googleapis.com/maps/api/directions/json?origin=45.2,9.4&destination=45.5,9.6&sensor=false&units=metric&mode=walking&waypoints="+URLEncoder.encode("45.4,10|45.2,9.31", "UTF-8");
 		} catch (UnsupportedEncodingException e1) {
 			e1.printStackTrace();
 		}
@@ -81,7 +80,7 @@ public class GoogleMapsUtils {
 		HttpGet getMethod = new HttpGet(url);
 		// The basic response handler
 		ResponseHandler<String> responseHandler = new BasicResponseHandler();
-		// instantiate the http communication
+		// instantiate the HTTP communication
 		HttpClient client = new DefaultHttpClient();
 		// Call the URL and get the response body
 		try {
