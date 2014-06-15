@@ -23,7 +23,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class GoogleMapsUtils {
 	
-	public final static int GOOGLE_API_SUPPORTED_WAYPOINTS = 8;
+	public final static int GOOGLE_API_SUPPORTED_WAYPOINTS = 0;
 	public final static String MODE_DRIVING = "driving";
 	public final static String MODE_WALKING = "walking";
 	public final static String MODE_BICYCLING = "bicycling";
@@ -32,6 +32,7 @@ public class GoogleMapsUtils {
 	
 	public static LatLng getGeoCode(String s) {
 		
+		//TODO MATTEO implementa metodo che usa il servizio di geocoding di google
 		return new LatLng(45.4627338,9.1777322);
 	}
 	
@@ -42,51 +43,85 @@ public class GoogleMapsUtils {
 			asyncRest.execute(unsortedPoi);
 		}
 		else{
-			List<LatLng> sortedPoi = OptimizationModule.localRouting(unsortedPoi);
+			//List<LatLng> sortedPoi = OptimizationModule.localRouting(unsortedPoi);
 			GoogleDirectionAsyncRestCall asyncRest= new GoogleDirectionAsyncRestCall(callback, mode, false);
-			asyncRest.execute(sortedPoi);
+			//asyncRest.execute(sortedPoi);
+			asyncRest.execute(unsortedPoi);
 		}
 	}
 	
 	private static String getJSONDirection(List<LatLng> listPoi, String mode, boolean remoteOptimization) {
-		// SE NON FUNZIA PROVARE AD AGGIUNGERE IN CODA << +"&sensor=false&key=API_KEY" >>
-		LatLng start = listPoi.get(0);
-		LatLng end = listPoi.get(listPoi.size()-1);
 		
-		String url=null;
+		String url1 = null;
+		String url = null;
+		String origin = null;
+		String destination = null;
+		String temp = null;
+		String pipe = null;
+		String wayPoints = "";
 		try {
-			url = "http://maps.googleapis.com/maps/api/directions/json?origin=45.2,9.4&destination=45.5,9.6&sensor=false&units=metric&mode=walking&waypoints="+URLEncoder.encode("45.2,9.31", "UTF-8");
-		} catch (UnsupportedEncodingException e1) {
-			e1.printStackTrace();
+			pipe = URLEncoder.encode("|","UTF-8");
+		} catch (UnsupportedEncodingException e2) {
+			e2.printStackTrace();
 		}
 		
-		// initialize url with start point and end point
-		String turl = "http://maps.googleapis.com/maps/api/directions/json?" + "origin=" + start.latitude + ","
-				+ start.longitude + "&destination=" + end.latitude + "," + end.longitude
-				+ "&sensor=false&units=metric&mode=" + mode + "&waypoints=optimize:";
+		origin = listPoi.get(0).latitude + "," + listPoi.get(0).longitude;
+		destination = listPoi.get(listPoi.size()-1).latitude + "," + listPoi.get(listPoi.size()-1).longitude;
 		
-		// add way points and choose optimization policy
 		if(listPoi.size()>2){
-			
-			// choose optimization policy
-			if(remoteOptimization){
-				turl = turl + "true";
-			}else{
-				turl = turl + "false";
-			}
-			
-			// add way points
-			for(int i=1;i<listPoi.size()-1;i++){
-				turl = turl + "|" + listPoi.get(i).latitude + "," + listPoi.get(i).longitude; 
+			for(int i=1; i<listPoi.size()-1; i++){
+				temp = listPoi.get(i).toString();
+				wayPoints = wayPoints + temp;
+				if(i+1<listPoi.size()-1){
+					wayPoints = wayPoints + pipe;
+				}
 			}
 		}
 		
+		if(remoteOptimization){
+		
+			// SE NON FUNZIA PROVARE AD AGGIUNGERE IN CODA << +"&sensor=false&key=API_KEY" >>
+			LatLng start = listPoi.get(0);
+			LatLng end = listPoi.get(listPoi.size()-1);
+		
+			try {
+				url = "https://maps.googleapis.com/maps/api/directions/json?origin=45.2,9.4&destination=45.5,9.6&sensor=false&units=metric&mode=walking&waypoints=optimize:true"+URLEncoder.encode("|","UTF-8")+"45.2,9.31&key="+URLEncoder.encode("AIzaSyDzbCl4ziud2A9H1ub6gLmIi-gkHT9RLUY", "UTF-8");
+			} catch (UnsupportedEncodingException e1) {
+				e1.printStackTrace();
+			}
+			
+			// Initialize url with start point and end point
+			String turl = "http://maps.googleapis.com/maps/api/directions/json?" + "origin=" + start.latitude + ","
+					+ start.longitude + "&destination=" + end.latitude + "," + end.longitude
+					+ "&sensor=false&units=metric&mode=" + mode + "&waypoints=optimize:";
+		
+			// Add way points and choose optimization policy
+			if(listPoi.size()>2){
+			
+				// Choose optimization policy
+				if(remoteOptimization){
+					turl = turl + "true";
+				}else{
+					turl = turl + "false";
+				}
+			
+				// Add way points
+				for(int i=1;i<listPoi.size()-1;i++){
+					turl = turl + "|" + listPoi.get(i).latitude + "," + listPoi.get(i).longitude; 
+				}
+			}
+		}
+		else{
+			url = "http://maps.googleapis.com/maps/api/directions/json?origin="+origin+"&destination="+destination+"&mode=walking&waypoints=via:45.487320,9.157197";
+		}
+		
+		// The response body
 		String responseBody = null;
 		// The HTTP get method send to the URL
 		HttpGet getMethod = new HttpGet(url);
 		// The basic response handler
 		ResponseHandler<String> responseHandler = new BasicResponseHandler();
-		// instantiate the HTTP communication
+		// Instantiate the HTTP communication
 		HttpClient client = new DefaultHttpClient();
 		// Call the URL and get the response body
 		try {
@@ -99,7 +134,7 @@ public class GoogleMapsUtils {
 		if (responseBody != null) {
 			Log.e("GoogleMapsUtils", responseBody);
 		}
-		// parse the response body
+		// Parse the response body
 		return responseBody;
 	}
 
@@ -120,7 +155,6 @@ public class GoogleMapsUtils {
 		return directions;
 	}
 	
-
 	/**
 	 * This class aims to make an async call to the server and retrieve the Json representing the Direction
 	 * Then build the GDirection object
@@ -132,8 +166,10 @@ public class GoogleMapsUtils {
 		private CallBack callback;
 		private boolean remoteOptimization;
 		
+		
 		public GoogleDirectionAsyncRestCall(CallBack callback, String mDirectionMode, boolean remote) {
 			super();
+			
 			this.mDirectionMode = mDirectionMode;
 			this.callback = callback;
 			this.remoteOptimization = remote;
@@ -141,20 +177,16 @@ public class GoogleMapsUtils {
 
 		@Override
 		protected List<Direction> doInBackground(List<LatLng>... arg0) {
+			
 			// Do the rest http call
 			String json = getJSONDirection(arg0[0], mDirectionMode, remoteOptimization);
 			// Parse the element and return it
 			return parseJsonGDir(json);
 		}
 		
-		/*
-		protected void onProgressUpdate(Integer... progress) {
-	         setProgressPercent(progress[0]);
-	     }
-		*/
-		
 		@Override
 		protected void onPostExecute(List<Direction> result) {
+			
 			super.onPostExecute(result);
 			// Just pass the result to the callback
 			callback.onDirectionLoaded(result);

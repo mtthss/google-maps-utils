@@ -25,8 +25,8 @@ public class OptimizationModule {
         // first approximation
         path = NearestNeighbor.executeNearestNeighbor(distanceMatrix, 0);
         // refinement
-        TwoOpt twoOpt = new TwoOpt(path, distanceMatrix);
-        path = twoOpt.getPath();
+        //TwoOpt twoOpt = new TwoOpt(path, distanceMatrix);
+        //path = twoOpt.getPath();
         
         // returned sorted list of POIs
         List<LatLng> sortedPoi = new ArrayList<LatLng>();
