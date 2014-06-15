@@ -1,5 +1,6 @@
 package visualization;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import model.Colour;
@@ -8,6 +9,7 @@ import model.Legs;
 import model.Point;
 import model.Route;
 import android.graphics.Color;
+import android.text.GetChars;
 import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -53,14 +55,32 @@ public class MapLook {
 	public static void drawAreas(List<PolygonOptions> polygons, GoogleMap map){
 		int i=0;
 		for(PolygonOptions pol: polygons){
-			i++;
-			pol.fillColor(Color.RED);
+			pol.fillColor(getColor(i));
 			pol.strokeWidth(0);
 			map.addPolygon(pol);
+			i++;
 		}
 		
 	}
 	
+	private static int getColor(int i){
+		switch (i) {
+		case 0:
+			return Color.argb(0, 255, 255, 102);
+		case 1:
+			return Color.argb(0, 178, 255, 102);
+		case 2:
+			return Color.argb(0, 153, 255, 255);
+		case 3:
+			return Color.argb(0, 255, 153, 153);
+		case 4:
+			return Color.argb(0, 255, 153, 51);
+		case 5:
+			return Color.argb(0, 51, 51, 153);
+		default:
+			return Color.argb(0, 255, 0, 0);
+		}
+	}
 	public static void drawPOI(List<MarkerOptions> pois, GoogleMap map){
 		for(MarkerOptions marker:pois){
 			map.addMarker(marker);
