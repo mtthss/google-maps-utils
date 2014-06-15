@@ -64,22 +64,31 @@ public class MapLook {
 	}
 	
 	private static int getColor(int i){
+		int n;
 		switch (i) {
 		case 0:
-			return Color.argb(0, 255, 255, 102);
+			n = Color.argb(100, 255, 255, 102);
+			break;
 		case 1:
-			return Color.argb(0, 178, 255, 102);
+			n = Color.argb(100, 178, 255, 102);
+			break;
 		case 2:
-			return Color.argb(0, 153, 255, 255);
+			n = Color.argb(100, 153, 255, 255);
+			break;
 		case 3:
-			return Color.argb(0, 255, 153, 153);
+			n = Color.argb(100, 255, 153, 153);
+			break;
 		case 4:
-			return Color.argb(0, 255, 153, 51);
+			n = Color.argb(100, 255, 153, 51);
+			break;
 		case 5:
-			return Color.argb(0, 51, 51, 153);
+			n = Color.argb(100, 51, 51, 153);
+			break;
 		default:
-			return Color.argb(0, 255, 0, 0);
+			n = Color.argb(100, 255, 0, 0);
+			break;
 		}
+		return n;
 	}
 	public static void drawPOI(List<MarkerOptions> pois, GoogleMap map){
 		for(MarkerOptions marker:pois){

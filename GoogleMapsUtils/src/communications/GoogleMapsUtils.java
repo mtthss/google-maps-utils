@@ -23,7 +23,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class GoogleMapsUtils {
 	
-	public final static int GOOGLE_API_SUPPORTED_WAYPOINTS = 0;
+	public final static int GOOGLE_API_SUPPORTED_WAYPOINTS = 8;
 	public final static String MODE_DRIVING = "driving";
 	public final static String MODE_WALKING = "walking";
 	public final static String MODE_BICYCLING = "bicycling";
@@ -59,6 +59,7 @@ public class GoogleMapsUtils {
 		String temp = null;
 		String pipe = null;
 		String wayPoints = "";
+		boolean wayPointsPresent = false;
 		try {
 			pipe = URLEncoder.encode("|","UTF-8");
 		} catch (UnsupportedEncodingException e2) {
@@ -69,50 +70,25 @@ public class GoogleMapsUtils {
 		destination = listPoi.get(listPoi.size()-1).latitude + "," + listPoi.get(listPoi.size()-1).longitude;
 		
 		if(listPoi.size()>2){
+			wayPointsPresent = true;
 			for(int i=1; i<listPoi.size()-1; i++){
-				temp = listPoi.get(i).toString();
-				wayPoints = wayPoints + temp;
+				temp = listPoi.get(i).latitude + "," + listPoi.get(i).longitude;
+				wayPoints = wayPoints + "via:" + temp;
 				if(i+1<listPoi.size()-1){
 					wayPoints = wayPoints + pipe;
 				}
 			}
 		}
 		
-		if(remoteOptimization){
-		
-			// SE NON FUNZIA PROVARE AD AGGIUNGERE IN CODA << +"&sensor=false&key=API_KEY" >>
-			LatLng start = listPoi.get(0);
-			LatLng end = listPoi.get(listPoi.size()-1);
-		
-			try {
-				url = "https://maps.googleapis.com/maps/api/directions/json?origin=45.2,9.4&destination=45.5,9.6&sensor=false&units=metric&mode=walking&waypoints=optimize:true"+URLEncoder.encode("|","UTF-8")+"45.2,9.31&key="+URLEncoder.encode("AIzaSyDzbCl4ziud2A9H1ub6gLmIi-gkHT9RLUY", "UTF-8");
-			} catch (UnsupportedEncodingException e1) {
-				e1.printStackTrace();
+		if(wayPointsPresent){
+			if(remoteOptimization){
+				url = "http://maps.googleapis.com/maps/api/directions/json?origin="+origin+"&destination="+destination+"&mode=walking&waypoints=optimize:true" + pipe +wayPoints;
 			}
-			
-			// Initialize url with start point and end point
-			String turl = "http://maps.googleapis.com/maps/api/directions/json?" + "origin=" + start.latitude + ","
-					+ start.longitude + "&destination=" + end.latitude + "," + end.longitude
-					+ "&sensor=false&units=metric&mode=" + mode + "&waypoints=optimize:";
-		
-			// Add way points and choose optimization policy
-			if(listPoi.size()>2){
-			
-				// Choose optimization policy
-				if(remoteOptimization){
-					turl = turl + "true";
-				}else{
-					turl = turl + "false";
-				}
-			
-				// Add way points
-				for(int i=1;i<listPoi.size()-1;i++){
-					turl = turl + "|" + listPoi.get(i).latitude + "," + listPoi.get(i).longitude; 
-				}
+			else{
+				url = "http://maps.googleapis.com/maps/api/directions/json?origin="+origin+"&destination="+destination+"&mode=walking&waypoints="+wayPoints;
 			}
-		}
-		else{
-			url = "http://maps.googleapis.com/maps/api/directions/json?origin="+origin+"&destination="+destination+"&mode=walking&waypoints=via:45.487320,9.157197";
+		}else{
+			url = "http://maps.googleapis.com/maps/api/directions/json?origin="+origin+"&destination="+destination+"&mode=walking";
 		}
 		
 		// The response body
