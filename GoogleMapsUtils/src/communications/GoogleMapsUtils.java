@@ -23,7 +23,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class GoogleMapsUtils {
 	
-	public final static int GOOGLE_API_SUPPORTED_WAYPOINTS = 8;
+	public final static int GOOGLE_API_SUPPORTED_WAYPOINTS = 0;
 	public final static String MODE_DRIVING = "driving";
 	public final static String MODE_WALKING = "walking";
 	public final static String MODE_BICYCLING = "bicycling";
@@ -43,10 +43,9 @@ public class GoogleMapsUtils {
 			asyncRest.execute(unsortedPoi);
 		}
 		else{
-			//List<LatLng> sortedPoi = OptimizationModule.localRouting(unsortedPoi);
+			List<LatLng> sortedPoi = OptimizationModule.localRouting(unsortedPoi);
 			GoogleDirectionAsyncRestCall asyncRest= new GoogleDirectionAsyncRestCall(callback, mode, false);
-			//asyncRest.execute(sortedPoi);
-			asyncRest.execute(unsortedPoi);
+			asyncRest.execute(sortedPoi);
 		}
 	}
 	

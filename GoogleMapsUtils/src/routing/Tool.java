@@ -1,4 +1,6 @@
 package routing;
+
+
 public class Tool {
 
 	public int computeCost(int[] path, int[][] distanceMatrix) {

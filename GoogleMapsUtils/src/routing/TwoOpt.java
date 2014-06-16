@@ -13,8 +13,10 @@ public class TwoOpt {
         int bestGain = Integer.MAX_VALUE;
         int bestI = Integer.MAX_VALUE;
         int bestJ = Integer.MAX_VALUE;
-                
-        while(bestGain >= 0) {
+        int iterations = 0;
+        
+        while(bestGain >= 0 && iterations < 100) {
+        	iterations++;
         	bestGain = 0;
             for(int i = 0; i < path.length; i++) {
             	for(int j = 0; j < path.length; j++) {
