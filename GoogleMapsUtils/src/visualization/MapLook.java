@@ -86,12 +86,13 @@ public class MapLook {
 		}
 		return n;
 	}
+
 	
 	public static void drawPOI(List<MarkerOptions> pois, GoogleMap map){
 		for(MarkerOptions marker:pois){
 			map.addMarker(marker);
 		}
-		
+
 	}
 
 	public static void drawSelectedPois(List<MarkerOptions> pois, GoogleMap map){
@@ -102,6 +103,6 @@ public class MapLook {
 		
 		
 	}
-	
+
 	
 }
