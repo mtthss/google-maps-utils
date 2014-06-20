@@ -21,6 +21,7 @@ import model.Direction;
 
 import com.google.android.gms.maps.model.LatLng;
 
+
 public class GoogleMapsUtils {
 	
 	public final static int GOOGLE_API_SUPPORTED_WAYPOINTS = 0;
@@ -36,18 +37,19 @@ public class GoogleMapsUtils {
 		return new LatLng(45.4627338,9.1777322);
 	}
 	
-	public static void getDirection(CallBack callback, List<LatLng> unsortedPoi, String mode) {
+	public static void getDirection(CallBack callback, List<LatLng> unsortedCoord, String mode) {
 		
-		if(unsortedPoi.size()<GOOGLE_API_SUPPORTED_WAYPOINTS){
+		if(unsortedCoord.size()<GOOGLE_API_SUPPORTED_WAYPOINTS){
 			GoogleDirectionAsyncRestCall asyncRest= new GoogleDirectionAsyncRestCall(callback, mode, true);
-			asyncRest.execute(unsortedPoi);
+			asyncRest.execute(unsortedCoord);
 		}
 		else{
-			List<LatLng> sortedPoi = OptimizationModule.localRouting(unsortedPoi);
+			List<LatLng> sortedCoord = OptimizationModule.localRouting(unsortedCoord);
 			GoogleDirectionAsyncRestCall asyncRest= new GoogleDirectionAsyncRestCall(callback, mode, false);
-			asyncRest.execute(sortedPoi);
+			asyncRest.execute(sortedCoord);
 		}
 	}
+	
 	
 	private static String getJSONDirection(List<LatLng> listPoi, String mode, boolean remoteOptimization) {
 		

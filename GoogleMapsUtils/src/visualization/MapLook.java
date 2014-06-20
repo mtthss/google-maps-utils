@@ -3,22 +3,18 @@ package visualization;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.Colour;
 import model.Direction;
 import model.Legs;
 import model.Point;
 import model.Route;
 import android.graphics.Color;
-import android.text.GetChars;
 import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+
 
 public class MapLook {
 	
@@ -90,13 +86,22 @@ public class MapLook {
 		}
 		return n;
 	}
+	
 	public static void drawPOI(List<MarkerOptions> pois, GoogleMap map){
 		for(MarkerOptions marker:pois){
 			map.addMarker(marker);
 		}
 		
 	}
-	
+
+	public static void drawSelectedPois(List<MarkerOptions> pois, GoogleMap map){
+		for(MarkerOptions marker:pois){
+			// TODO implementa apparizione in sequenza con un piccolo delay, o meglio, caduta dei marker dall'alto
+			map.addMarker(marker);
+		}
+		
+		
+	}
 	
 	
 }
