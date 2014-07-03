@@ -123,8 +123,7 @@ public class GoogleMapsUtils {
 			}
 		}
 	}
-	
-	
+		
 	private static String getJSONDirection(List<LatLng> listPoi, String mode, boolean remoteOptimization) {
 		
 		String url1 = null;
