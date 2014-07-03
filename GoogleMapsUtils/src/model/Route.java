@@ -3,13 +3,8 @@ package model;
 
 import java.util.List;
 
-/**
- * This class aims toThis class aims to define a GoogleDirection Path which is bound to the JSon structure
- *        returned by the webService :
- *        "http://maps.googleapis.com/maps/api/directions/json?" + "origin=" + start.latitude + ","
- *        + start.longitude + "&destination=" + end.latitude + "," + end.longitude
- *        + "&sensor=false&units=metric&mode=driving";
- */
+
+
 public class Route {
 
 	List<Point> mRoute;

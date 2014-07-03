@@ -80,6 +80,7 @@ public class GoogleMapsUtils {
 		}
 		else{
 			List<LatLng> sortedCoord = OptimizationModule.localRouting(unsortedCoord);
+			callback.setOrderedList(sortedCoord);
 			if(sortedCoord.size()<=10){
 				GoogleDirectionAsyncRestCall asyncRest = new GoogleDirectionAsyncRestCall(callback, mode, false);
 				asyncRest.execute(sortedCoord);

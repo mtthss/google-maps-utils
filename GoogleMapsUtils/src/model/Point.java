@@ -31,15 +31,6 @@ package model;
 
 import com.google.android.gms.maps.model.LatLng;
 
-/**
- * @author Mathias Seguy (Android2EE)
- * @goals
- *        This class aims to define a GoogleDirection Point which is bound to the JSon structure
- *        returned by the webService :
- *        "http://maps.googleapis.com/maps/api/directions/json?" + "origin=" + start.latitude + ","
- *        + start.longitude + "&destination=" + end.latitude + "," + end.longitude
- *        + "&sensor=false&units=metric&mode=driving";
- */
 public class Point {
 
 	double mLat;
