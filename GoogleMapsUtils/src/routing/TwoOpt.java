@@ -3,89 +3,67 @@ package routing;
 public class TwoOpt {
 
 	private int[] path;
+	private int[] pathNew;
 	private int[][] distanceMatrix;
     private Tool tool = new Tool();
-        
-    public TwoOpt(int[] path, int[][] distanceMatrix) {
+    private int bestCost;
+    private int improvedCost;
+    
+    
+    public TwoOpt(int[] initialPath, int[][] distanceMatrix) {
+    	
     	this.distanceMatrix = distanceMatrix;
-        this.path = path;
-                
-        int bestGain = Integer.MAX_VALUE;
-        int bestI = Integer.MAX_VALUE;
-        int bestJ = Integer.MAX_VALUE;
+        this.path = initialPath;
+        this.bestCost = tool.computeCost(path, distanceMatrix);
+        this.improvedCost = bestCost;
+        
+        boolean isImproved = true;
         int iterations = 0;
         
-        while(bestGain >= 0 && iterations < 100) {
-        	iterations++;
-        	bestGain = 0;
-            for(int i = 0; i < path.length; i++) {
-            	for(int j = 0; j < path.length; j++) {
+        while(isImproved && iterations < 30){
+        	isImproved = false;
+        	for(int i = 1; i < path.length && !isImproved; i++) {
+            	for(int j = i+1; j < path.length && !isImproved; j++) {
             		if(i!=j) {
-            			int gain = computeGain(i, j);
-                        if(gain < bestGain) {
-                        	bestGain = gain;
-                            bestI = i;
-                            bestJ = j;
-                        }
-                    }
-                }
+            			improvedCost = tryExchange(i, j);
+            			if(improvedCost<bestCost){
+            				path = pathNew;
+            				bestCost = improvedCost;
+            				isImproved = true;
+            			}
+            		}
+            	}
             }
-                        
-            if(bestI != Integer.MAX_VALUE && bestJ != Integer.MAX_VALUE) {
-            	exchange(bestI, bestJ);
-            }
-        }
+        	iterations++;
+        }        
+        
     }
+    
+    private int tryExchange(int index1, int index2){
         
-    private int computeGain(final int cityIndex1, final int cityIndex2) {
-                
-    	int src1 = path[cityIndex1];
-    	int src2 = path[cityIndex2];
-                
-    	int dest1 = tool.getDestination(path, cityIndex1);
-    	int dest2 = tool.getDestination(path, cityIndex2);;
-                
-    	return ((distanceMatrix[dest1][dest2] + distanceMatrix[src1][src2]) - (distanceMatrix[src1][dest1] + distanceMatrix[src2][dest2]));
-    }
-        
-    private void exchange(final int cityIndex1, final int cityIndex2) {
-                
-    	int indexDest1 = tool.getIndexOfDestination(path, cityIndex1);
-        int indexDest2 = tool.getIndexOfDestination(path, cityIndex2);
-        
-        int[] pathNew = new int[path.length];
+        pathNew = new int[path.length];
         int indexOfPathNew = 0;
                 
         int i = 0;
-        while(i <= cityIndex1) {
-        	if(tool.isCityInPath(pathNew, path[i]) == false) {
-        		pathNew[indexOfPathNew] = path[i];
-                indexOfPathNew++;
-            }
+        while(i <= index1-1) {
+        	pathNew[indexOfPathNew] = path[i];
+            indexOfPathNew++;
             i++;
         }
-                
-        i = cityIndex2;
-        while(i >= indexDest1) {
-        	if(tool.isCityInPath(pathNew, path[i]) == false) {
-        		pathNew[indexOfPathNew] = path[i];
-                indexOfPathNew++;
-            }
-            i--;
+        i=index2;
+        while(i>=index1){
+        	pathNew[indexOfPathNew] = path[i];
+        	indexOfPathNew++;
+        	i--;
         }
-                
-        i = indexDest2;
-        while(i < path.length) {
-        	if(tool.isCityInPath(pathNew, path[i]) == false) {
-        		pathNew[indexOfPathNew] = path[i];
-                indexOfPathNew++;
-            }
-            i++;
+        i=index2+1;
+        while(i<path.length){
+        	pathNew[indexOfPathNew] = path[i];
+        	indexOfPathNew++;
+        	i++;
         }
-                
-        for(int j = 0; j < pathNew.length; j++) {
-        	path[j] = pathNew[j];
-        }
+        
+    	return tool.computeCost(pathNew, distanceMatrix);
     }
         
     public int[] getPath() {

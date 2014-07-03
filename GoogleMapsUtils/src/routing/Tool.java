@@ -8,7 +8,7 @@ public class Tool {
         for(int i = 1; i < path.length; i++) {
         	cost += distanceMatrix[path[i-1]][path[i]];
         }
-        cost += distanceMatrix[path[path.length - 1]] [path[0]];
+        //cost += distanceMatrix[path[path.length - 1]] [path[0]];
         return cost;
     }
 
