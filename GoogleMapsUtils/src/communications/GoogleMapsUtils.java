@@ -236,6 +236,7 @@ public class GoogleMapsUtils {
 		private String mDirectionMode = null;
 		private CallBack callback;
 		private boolean remoteOptimization;
+		private List<LatLng> ordered;
 		
 		
 		public GoogleDirectionAsyncRestCall(CallBack callback, String mDirectionMode, boolean remote) {
@@ -249,6 +250,7 @@ public class GoogleMapsUtils {
 		@Override
 		protected List<Direction> doInBackground(List<LatLng>... arg0) {
 			
+			ordered = arg0[0];
 			// Do the rest http call
 			String json = getJSONDirection(arg0[0], mDirectionMode, remoteOptimization);
 			// Parse the element and return it
@@ -260,7 +262,7 @@ public class GoogleMapsUtils {
 			
 			super.onPostExecute(result);
 			// Just pass the result to the callback
-			callback.onDirectionLoaded(result);
+			callback.onDirectionLoaded(result, ordered);
 		}
 	}
 	
