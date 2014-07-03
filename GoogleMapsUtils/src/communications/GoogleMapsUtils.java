@@ -165,7 +165,7 @@ public class GoogleMapsUtils {
 		}else{
 			url = "http://maps.googleapis.com/maps/api/directions/json?origin="+origin+"&destination="+destination+"&mode=walking";
 		}
-		
+		Log.e("GoogleMapsUtils", url);
 		// The response body
 		String responseBody = null;
 		// The HTTP get method send to the URL
